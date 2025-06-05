@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday My Love</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(-45deg, #ff6b9d, #ffc3e1, #ff9a9e, #fecfef, #ffb6c1, #ffd1dc);
+            background-size: 600% 600%;
+            animation: gradientShift 20s ease infinite;
+            min-height: 100vh;
+            overflow: hidden;
+            perspective: 2000px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 100% 0%; }
+            50% { background-position: 100% 100%; }
+            75% { background-position: 0% 100%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Floating elements */
+        .floating-heart {
+            position: fixed;
+            pointer-events: none;
+            z-index: 5;
+            animation: float3D 8s linear infinite;
+        }
+
+        @keyframes float3D {
+            0% {
+                transform: translateY(100vh) translateX(0) rotateY(0deg) rotateX(0deg) scale(0.5);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% {
+                transform: translateY(-100px) translateX(50px) rotateY(360deg) rotateX(180deg) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        .floating-rose {
+            position: fixed;
+            pointer-events: none;
+            z-index: 5;
+            animation: floatRose 12s linear infinite;
+        }
+
+        @keyframes floatRose {
+            0% {
+                transform: translateY(100vh) translateX(0) rotateZ(0deg) scale(0.8);
+                opacity: 0;
+            }
+            15% { opacity: 1; }
+            85% { opacity: 1; }
+            100% {
+                transform: translateY(-100px) translateX(-30px) rotateZ(720deg) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .header {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 100;
+            animation: headerFloat 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes headerFloat {
+            from { transform: translateX(-50%) translateY(0px) rotateX(0deg); }
+            to { transform: translateX(-50%) translateY(-10px) rotateX(2deg); }
+        }
+
+        .title {
+            font-size: 3.5rem;
+            color: #fff;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.4), 0 0 20px rgba(255,182,193,0.8);
+            margin-bottom: 10px;
+            animation: titlePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { 
+                transform: scale(1) rotateY(0deg);
+                text-shadow: 3px 3px 6px rgba(0,0,0,0.4), 0 0 20px rgba(255,182,193,0.8);
+            }
+            50% { 
+                transform: scale(1.1) rotateY(5deg);
+                text-shadow: 5px 5px 10px rgba(0,0,0,0.6), 0 0 30px rgba(255,182,193,1);
+            }
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .card-slider {
+            width: 100%;
+            max-width: 800px;
+            height: 600px;
+            position: relative;
+            transform-style: preserve-3d;
+            perspective: 2000px;
+        }
+
+        .card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 25px 60px rgba(255, 107, 157, 0.4);
+            backdrop-filter: blur(20px);
+            transform-style: preserve-3d;
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+            transform: rotate(45deg);
+            transition: all 0.8s;
+            opacity: 0;
+        }
+
+        .card.active::before {
+            animation: shimmer 2s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); opacity: 0; }
+        }
+
+        .card.active {
+            transform: translateZ(0px) rotateY(0deg) scale(1);
+            opacity: 1;
+            z-index: 10;
+        }
+
+        .card.next {
+            transform: translateX(100%) translateZ(-200px) rotateY(-45deg) scale(0.8);
+            opacity: 0.3;
+            z-index: 5;
+        }
+
+        .card.prev {
+            transform: translateX(-100%) translateZ(-200px) rotateY(45deg) scale(0.8);
+            opacity: 0.3;
+            z-index: 5;
+        }
+
+        .card.hidden {
+            transform: translateZ(-400px) scale(0.5);
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .photo-container {
+            width: 100%;
+            max-width: 400px;
+            height: 500px;
+            border-radius: 20px;
+            overflow: inherit;
+            margin-bottom: 40px;
+            position: relative;
+            box-sizing: border-box;
+            align-items: center;
+            justify-items: center;
+            
+            transform-style: preserve-3d;
+            
+            box-shadow: 0 15px 30px rgba(255, 107, 157, 0.3);
+        }
+
+        .photo-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff6b9d, #ff9a9e, #ffc3e1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .photo-placeholder::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: photoShine 4s ease-in-out infinite;
+        }
+
+        @keyframes photoShine {
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: 100%; }
+        }
+
+        .card-number {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            background: linear-gradient(45deg, #ff6b9d, #ff9a9e);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: linear-gradient(45deg, #ff6b9d, #ff9a9e);
+            border: none;
+            color: white;
+            padding: 15px 25px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 8px 25px rgba(255, 107, 157, 0.6);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .progress-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .progress-dot.active {
+            background: #ff6b9d;
+            transform: scale(1.3);
+            box-shadow: 0 0 15px rgba(255, 107, 157, 0.8);
+        }
+
+        .swipe-hint {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 1.1rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            animation: hintPulse 2s ease-in-out infinite;
+            z-index: 100;
+        }
+
+        @keyframes hintPulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        .sparkle {
+            position: absolute;
+            pointer-events: none;
+            animation: sparkleAnimation 2s linear infinite;
+            z-index: 2;
+        }
+
+        @keyframes sparkleAnimation {
+            0%, 100% { 
+                opacity: 0; 
+                transform: scale(0.5) rotate(0deg); 
+            }
+            50% { 
+                opacity: 1; 
+                transform: scale(1.2) rotate(180deg); 
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .title { font-size: 2.5rem; }
+            .subtitle { font-size: 1.1rem; }
+            .card-slider { 
+                max-width: 90vw; 
+                height: 500px;
+            }
+            .card { padding: 25px; }
+            .photo-container { 
+                height: 200px; 
+                max-width: 100%;
+            }
+            .header { top: 10px; }
+            .navigation { bottom: 30px; }
+            .nav-btn { 
+                padding: 12px 20px; 
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .title { font-size: 2rem; }
+            .card-slider { height: 450px; }
+            .card { padding: 20px; }
+            .photo-container { height: 180px; }
+            .photo-placeholder { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Music -->
+    <audio id="backgroundMusic" autoplay loop>
+        <source src="./Tujhe Main Pyar Karu - 1920 128 Kbps-[AudioTrimmer.com].mp3" type="audio/mpeg">
+        <!-- Replace with your romantic song -->
+    </audio>
+
+
+    <div class="card-slider" id="cardSlider">
+        <!-- Card 1 -->
+        <div class="card active">
+            <div class="card-number">1 / 10</div>
+            <div class="photo-container">
+                <div class="photo-placeholder">
+                
+                    <img src="r1.jpeg" alt="Memory 1" style="width:100%;height:100%;object-fit:fill;"> 
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="card next">
+            <div class="card-number">2 / 10</div>
+            <div class="photo-container">
+                <div class="photo-placeholder">
+                   <img src="r8.jpeg" alt="Memory 1" style="width:100%;height:100%;object-fit:fill;"> 
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="card hidden">
+            <div class="card-number">3 / 10</div>
+            <div class="photo-container">
+                <div class="photo-placeholder">
+                    <img src="r7.jpeg" alt="Memory 1" style="width:100%;height:100%;object-fit:fill;"> 
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="card hidden">
+            <div class="card-number">4 / 10</div>
+            <div class="photo-container">
+                <div class="photo-placeholder">
+                    <img src="r6.jpeg" alt="Memory 1" style="width:100%;height:100%;object-fit:fill;"> 
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="card hidden">
+            <div class="card-number">5 / 10</div>
+            <div class="photo-container">
+                <div class="photo-placeholder">
+                    <img src="r5.jpeg" alt="Memory 1" style="width:100%;height:100%;object-fit:fill;"> 
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 6 -->
+        <div class="card hidden">
+            <div class="card-number">6 / 10</div>
+            <div class="photo-container">
+                <div class="photo-placeholder">
+                    <img src="r4.jpeg" alt="Memory 1" style="width:100%;height:100%;object-fit:fill;"> 
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 7 -->
+        <div class="card hidden">
+            <div class="card-number">7 / 10</div>
+            <div class="photo-container">
+                <div class="photo-placeholder">
+                    <img src="r3.jpeg" alt="Memory 1" style="width:100%;height:100%;object-fit:fill;"> 
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 8 -->
+        <div class="card hidden">
+            <div class="card-number">8 / 10</div>
+            <div class="photo-container">
+                <div class="photo-placeholder">
+                    <img src="r9.jpeg" alt="Memory 1" style="width:100%;height:100%;object-fit: fill;"> 
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 9 -->
+        <div class="card hidden">
+            <div class="card-number">9 / 10</div>
+            <div class="photo-container">
+                <div class="photo-placeholder">
+                   <img src="r10.jpeg" alt="Memory 1" style="width:100%;height:100%;object-fit:cover;"> 
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 10 -->
+        <div class="card hidden">
+            <div class="card-number">10 / 10</div>
+            <div class="photo-container">
+                <div class="photo-placeholder">
+                    <img src="r1.jpeg" alt="Memory 1" style="width:100%;height:100%;object-fit:fill;"> 
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="previousCard()">⬅️ Previous</button>
+        <button class="nav-btn" id="nextBtn" onclick="nextCard()">Next ➡️</button>
+    </div>
+
+    <div class="progress-bar" id="progressBar">
+        <div class="progress-dot active" onclick="goToCard(0)"></div>
+        <div class="progress-dot" onclick="goToCard(1)"></div>
+        <div class="progress-dot" onclick="goToCard(2)"></div>
+        <div class="progress-dot" onclick="goToCard(3)"></div>
+        <div class="progress-dot" onclick="goToCard(4)"></div>
+        <div class="progress-dot" onclick="goToCard(5)"></div>
+        <div class="progress-dot" onclick="goToCard(6)"></div>
+        <div class="progress-dot" onclick="goToCard(7)"></div>
+        <div class="progress-dot" onclick="goToCard(8)"></div>
+        <div class="progress-dot" onclick="goToCard(9)"></div>
+    </div>
+
+    <script>
+        let currentCard = 0;
+        const totalCards = 10;
+        const cards = document.querySelectorAll('.card');
+        const progressDots = document.querySelectorAll('.progress-dot');
+
+        // Auto-play music
+        const music = document.getElementById('backgroundMusic');
+        music.play().catch(() => {
+            document.addEventListener('click', () => {
+                music.play();
+            }, { once: true });
+        });
+
+        // Update card positions
+        function updateCards() {
+            cards.forEach((card, index) => {
+                card.classList.remove('active', 'next', 'prev', 'hidden');
+                
+                if (index === currentCard) {
+                    card.classList.add('active');
+                } else if (index === currentCard + 1 || (currentCard === totalCards - 1 && index === 0)) {
+                    card.classList.add('next');
+                } else if (index === currentCard - 1 || (currentCard === 0 && index === totalCards - 1)) {
+                    card.classList.add('prev');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            // Update progress dots
+            progressDots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentCard);
+            });
+
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentCard === 0;
+            document.getElementById('nextBtn').disabled = currentCard === totalCards - 1;
+        }
+
+        // Navigation functions
+        function nextCard() {
+            if (currentCard < totalCards - 1) {
+                currentCard++;
+                updateCards();
+                createSparkles();
+            }
+        }
+
+        function previousCard() {
+            if (currentCard > 0) {
+                currentCard--;
+                updateCards();
+                createSparkles();
+            }
+        }
+
+        function goToCard(index) {
+            currentCard = index;
+            updateCards();
+            createSparkles();
+        }
+
+        // Touch/swipe functionality
+        let startX = 0;
+        let startY = 0;
+        let isSwipeMode = false;
+
+        document.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            isSwipeMode = true;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            if (!isSwipeMode) return;
+            
+            const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
+            const diffX = startX - endX;
+            const diffY = startY - endY;
+
+            // Only swipe if horizontal movement is greater than vertical
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+                if (diffX > 0) {
+                    nextCard(); // Swipe left - next card
+                } else {
+                    previousCard(); // Swipe right - previous card
+                }
+            }
+            isSwipeMode = false;
+        });
+
+        // Mouse swipe for desktop
+        let mouseStartX = 0;
+        let isMouseSwipe = false;
+
+        document.addEventListener('mousedown', (e) => {
+            mouseStartX = e.clientX;
+            isMouseSwipe = true;
+        });
+
+        document.addEventListener('mouseup', (e) => {
+            if (!isMouseSwipe) return;
+            
+            const diffX = mouseStartX - e.clientX;
+            if (Math.abs(diffX) > 100) {
+                if (diffX > 0) {
+                    nextCard();
+                } else {
+                    previousCard();
+                }
+            }
+            isMouseSwipe = false;
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                previousCard();
+            } else if (e.key === 'ArrowRight') {
+                nextCard();
+            }
+        });
+
+        // Create floating hearts
+        function createFloatingHeart() {
+            const hearts = ['💖', '❤️', '💕', '💘', '💝', '💗'];
+            const heart = document.createElement('div');
+            heart.className = 'floating-heart';
+            heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.fontSize = (Math.random() * 25 + 20) + 'px';
+            heart.style.animationDuration = (Math.random() * 4 + 6) + 's';
+            heart.style.animationDelay = Math.random() * 2 + 's';
+            document.body.appendChild(heart);
+
+            setTimeout(() => heart.remove(), 10000);
+        }
+
+        // Create floating roses
+        function createFloatingRose() {
+            const roses = ['🌹', '🌺', '🌸', '🌼'];
+            const rose = document.createElement('div');
+            rose.className = 'floating-rose';
+            rose.innerHTML = roses[Math.floor(Math.random() * roses.length)];
+            rose.style.left = Math.random() * 100 + 'vw';
+            rose.style.fontSize = (Math.random() * 20 + 25) + 'px';
+            rose.style.animationDuration = (Math.random() * 5 + 10) + 's';
+            rose.style.animationDelay = Math.random() * 3 + 's';
+            document.body.appendChild(rose);
+
+            setTimeout(() => rose.remove(), 15000);
+        }
+
+        // Create sparkles when changing cards
+        function createSparkles() {
+            const activeCard = document.querySelector('.card.active');
+            for(let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle';
+                    sparkle.innerHTML = '✨';
+                    sparkle.style.left = Math.random() * 100 + '%';
+                    sparkle.style.top = Math.random() * 100 + '%';
+                    sparkle.style.fontSize = (Math.random() * 10 + 15) + 'px';
+                    sparkle.style.animationDelay = Math.random() * 1 + 's';
+                    activeCard.appendChild(sparkle);
+
+                    setTimeout(() => sparkle.remove(), 2000);
+                }, i * 100);
+            }
+        }
+
+        // Auto-advance cards (optional)
+        function startAutoAdvance() {
+            setInterval(() => {
+                if (currentCard < totalCards - 1) {
+                    nextCard();
+                } else {
+                    currentCard = 0;
+                    updateCards();
+                }
+            }, 10000); // Change card every 10 seconds
+        }
+
+        // Initialize
+        updateCards();
+        createSparkles();
+
+        // Start floating animations
+        setInterval(createFloatingHeart, 1500);
+        setInterval(createFloatingRose, 3000);
+
+        // Uncomment to enable auto-advance
+        // startAutoAdvance();
+    </script>
+</body>
+</html>
